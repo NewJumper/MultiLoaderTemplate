@@ -4,8 +4,8 @@ plugins {
 }
 dependencies {
     minecraft "com.mojang:minecraft:${minecraft_version}"
-    implementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
-    implementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
+    implementation "net.fabricmc:fabric-loader:${fabric_version}"
+    implementation "net.fabricmc.fabric-api:fabric-api:${fabric_api_version}"
 }
 
 loom {
@@ -20,18 +20,16 @@ loom {
             ideConfigGenerated(true)
             runDir('runs/client')
         }
-        server {
-            server()
-            setConfigName('Fabric Server')
-            ideConfigGenerated(true)
-            runDir('runs/server')
-        }
     }
 }
 
-// Implement mcgradleconventions loader attribute
+sourceSets.main.resources {
+    srcDir project(":common").file("src/generated/resources").getAbsolutePath()
+    exclude project(":common").file("src/generated/**/.cache").getAbsolutePath()
+}
+
 def loaderAttribute = Attribute.of('io.github.mcgradleconventions.loader', String)
-['apiElements', 'runtimeElements', 'sourcesElements', 'javadocElements', 'includeInternal', 'modCompileClasspath'].each { variant ->
+['apiElements', 'runtimeElements', 'includeInternal', 'modCompileClasspath'].each { variant ->
     configurations.named("$variant") {
         attributes {
             attribute(loaderAttribute, 'fabric')
